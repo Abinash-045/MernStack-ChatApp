@@ -10,5 +10,13 @@
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Abinash-045/MernStack-ChatApp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Abinash-045/MernStack-ChatApp/issues"
+  },
+  "homepage": "https://github.com/Abinash-045/MernStack-ChatApp#readme",
   "description": ""
 }
