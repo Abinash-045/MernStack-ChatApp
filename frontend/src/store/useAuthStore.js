@@ -15,23 +15,13 @@ export const useAuthStore = create((set, get) => ({
   socket: null,
 
   checkAuth: async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      set({ authUser: null, isCheckingAuth: false });
-      return;
-    }
-
     try {
-      const res = await axiosInstance.get("/auth/check", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await axiosInstance.get("/auth/check");
 
       set({ authUser: res.data });
       get().connectSocket();
     } catch (error) {
-      console.log("Error in checkAuth:", error.response?.data || error.message);
+      console.log("Error in checkAuth:", error);
       set({ authUser: null });
     } finally {
       set({ isCheckingAuth: false });
@@ -42,15 +32,11 @@ export const useAuthStore = create((set, get) => ({
     set({ isSigningUp: true });
     try {
       const res = await axiosInstance.post("/auth/signup", data);
-      const { token, user } = res.data;
-
-      localStorage.setItem("token", token);
-      set({ authUser: user });
-
+      set({ authUser: res.data });
       toast.success("Account created successfully");
       get().connectSocket();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Signup failed");
+      toast.error(error.response.data.message);
     } finally {
       set({ isSigningUp: false });
     }
@@ -60,15 +46,12 @@ export const useAuthStore = create((set, get) => ({
     set({ isLoggingIn: true });
     try {
       const res = await axiosInstance.post("/auth/login", data);
-      const { token, user } = res.data;
-
-      localStorage.setItem("token", token);
-      set({ authUser: user });
-
+      set({ authUser: res.data });
       toast.success("Logged in successfully");
+
       get().connectSocket();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Login failed");
+      toast.error(error.response.data.message);
     } finally {
       set({ isLoggingIn: false });
     }
@@ -77,12 +60,11 @@ export const useAuthStore = create((set, get) => ({
   logout: async () => {
     try {
       await axiosInstance.post("/auth/logout");
-      localStorage.removeItem("token"); // Clear token
       set({ authUser: null });
       toast.success("Logged out successfully");
       get().disconnectSocket();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Logout failed");
+      toast.error(error.response.data.message);
     }
   },
 
@@ -94,7 +76,7 @@ export const useAuthStore = create((set, get) => ({
       toast.success("Profile updated successfully");
     } catch (error) {
       console.log("error in update profile:", error);
-      toast.error(error.response?.data?.message || "Profile update failed");
+      toast.error(error.response.data.message);
     } finally {
       set({ isUpdatingProfile: false });
     }
@@ -117,7 +99,6 @@ export const useAuthStore = create((set, get) => ({
       set({ onlineUsers: userIds });
     });
   },
-
   disconnectSocket: () => {
     if (get().socket?.connected) get().socket.disconnect();
   },

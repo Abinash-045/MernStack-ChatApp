@@ -1,30 +1,30 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import cookieParser from 'cookie-parser';
-import cors from 'cors';
+import express from "express";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import cors from "cors";
 
-import path from 'path';
+import path from "path";
 
-import { connectDB } from './lib/db.js';
-import authRoutes from './routes/auth.route.js';
-import messageRoutes from './routes/message.route.js';
-import { app,server } from './lib/socket.js';
+import { connectDB } from "./lib/db.js";
+
+import authRoutes from "./routes/auth.route.js";
+import messageRoutes from "./routes/message.route.js";
+import { app, server } from "./lib/socket.js";
 
 dotenv.config();
 
 const PORT = process.env.PORT;
 const __dirname = path.resolve();
 
-// CORS should be applied before routes
-app.use(cors({
-  origin: "http://localhost:5173", // Allow frontend's origin
-  credentials: true,              // Allow cookies if you're using sessions or authentication
-}));
-
 app.use(express.json());
 app.use(cookieParser());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
-// Route declarations
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
@@ -37,7 +37,6 @@ if (process.env.NODE_ENV === "production") {
 }
 
 server.listen(PORT, () => {
-  console.log("Server is running on port: " + PORT);
+  console.log("server is running on PORT:" + PORT);
   connectDB();
 });
-
